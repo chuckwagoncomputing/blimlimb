@@ -3,6 +3,7 @@ require 'net/yail'
 
 HOST = 'irc.freenode.net'
 CHAN = '#blimlimb'
+PUPPET = true
 
 class BotPlayer
   attr_reader :nick, :irc
@@ -18,7 +19,6 @@ class BotPlayer
 
     # Required otherwise Yail 1.3.1 fails
     @irc.prepend_handler :incoming_any, proc { |text|
-      return
     }
 
     @irc.prepend_handler :incoming_welcome, method(:do_connected)
@@ -95,11 +95,15 @@ class BotTroupe
         @actors[kid].action(msg)
         puts "** #{@actors[kid].nick} #{msg}"
       when /^\*\s+(.+?)$/
+        if PUPPET == true
         puts "--- okay, _why: your console - #$1 ---"
         while true
           puppet = $stdin.gets.strip
           break if puppet =~ /^\*/
           parse puppet
+        end
+        else
+        puts "puppet skipped"
         end
       when /^p\s+([\d\.]+)$/
         secs = $1.to_f
